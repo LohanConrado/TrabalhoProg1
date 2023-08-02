@@ -1,0 +1,245 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// VOLTAR PARA O MENU
+void voltarMenuPrincipal(indice) {
+  while (indice != 5) {
+    printf("\nDigite 5 para voltar:");
+    scanf("%d", &indice);
+    if (indice != 5) {
+      printf("\nOpção inválida");
+    }
+  }
+}
+// FUNÇÃO PARA SABER SE O SISTEMA É WIN OU LINUX E EXECUTAR A LIMPEZA DE TELA
+void clear() {
+#ifdef __linux__
+  system("clear");
+#elif _WIN32
+  system("cls");
+#endif
+}
+
+// PROGRAMA
+int main(void) {
+  int menu = 0;
+  char nomes[10][30];
+  char sexos[10];
+  float valorCompras[10];
+  float maiorValor = 0;
+  float menorValor = 0;
+  float valorVerificar = 0;
+  int contadorM = 0;
+  int contadorF = 0;
+  int resultado = 0;
+  int qntdMaior = 0;
+  int qntdMenor = 0;
+  char nomeVerificar[30];
+  int igual = 0;
+  float total = 0;
+  float totalM;
+  float media = 0;
+  int cadastros = 0;
+
+  printf("Digite o número de cadastros: (Limite 10):");
+  scanf("%d", &cadastros);
+  clear();
+
+  for (int i = 0; i < cadastros; i++) {
+    // CADASTRA OS NOMES
+    printf("Digite o nome %d: ", i + 1);
+    scanf("%s", nomes[i]);
+    //---------------------------------
+    // VALIDAR NOME
+    for (int j = 0; j < i; j++) {
+      if (strcmp(nomes[i], nomes[j]) == 0) {
+        do {
+          printf("\nImpossivel Cadastrar (Já existe um cliente com esse nome)");
+          printf("\nDigite o nome novamente: ");
+          scanf(" %s", nomes[i]);
+          for (int z = 0; z < i; z++) {
+            resultado = strcmp(nomes[i], nomes[z]);
+          }
+        } while (resultado == 0);
+      }
+    }
+
+    //---------------------------------
+    // CADASTRO SEXO
+    printf("\nDigite o seu sexo (m/f): ");
+    scanf(" %c", &sexos[i]);
+    //---------------------------------
+    // VALIDAR SEXO
+    if (sexos[i] != 'm' && sexos[i] != 'f') {
+      do {
+        printf("\nSexo incorreto, responda com m ou f: ");
+        scanf(" %c", &sexos[i]);
+      } while (sexos[i] != 'm' && sexos[i] != 'f');
+    } else if (sexos[i] == 'f') {
+      contadorF++;
+    } else if (sexos[i] == 'm') {
+      contadorM++;
+    }
+    //---------------------------------
+
+    // CADASTRO DE COMPRAS
+    printf("\nDigite o valor da compra: ");
+    scanf("%f", &valorCompras[i]);
+    //---------------------------------
+    // VALIDAÇÃO DE COMPRA
+    if (valorCompras[i] <= 0) {
+      do {
+        printf("\nO valor da compra não pode ser negativo");
+        printf("\nDigite o valor da compra novamente: ");
+        scanf("%f", &valorCompras[i]);
+      } while (valorCompras[i] <= 0);
+    }
+    //---------------------------------
+    // VERIFICAÇÃO DE ERRO
+    if (valorCompras[i] > 0 && (sexos[i] == 'm' || sexos[i] == 'f')) {
+      printf("\nCadastro da compra efetuado com sucesso");
+      printf("\n-----------------------------------------------\n");
+    }
+  }
+  // MENU
+  while (menu != 3) {
+    // LIMPA A TELA
+    clear();
+    printf("\n-------------------- MENU --------------------"
+           "\nDigite o numero da opção que deseja:"
+           "\n1 - Informações dos Clientes:"
+           "\n2 - Informações das Compras:"
+           "\n3 - Encerrar o programa"
+           "\n-----------------------------------------------\n");
+    scanf("%d", &menu);
+
+    switch (menu) {
+
+    case 1:
+      clear();
+      // LISTA DE CLIENTES CADASTRADOS
+      printf("\n----- Clientes Cadastrados:-----\n");
+      for (int i = 0; i < cadastros; i++) {
+        printf(" %s ", nomes[i]);
+        printf("\n");
+      }
+      printf("\n----- Informações Cadastradas:-----\n");
+      printf("\nDigite o nome: ");
+      scanf("%s", nomeVerificar);
+
+      // IMPRESSÃO E VERIFICAÇÃO DE DADOS
+      igual = 0;
+      for (int i = 0; i < cadastros; i++) {
+        if (strcmp(nomeVerificar, nomes[i]) == 0) {
+          igual++;
+          printf("\nNome: %s", nomes[i]);
+          if (sexos[i] == 'm') {
+            printf("\nSexo: Masculino");
+          } else if (sexos[i] == 'f') {
+            printf("\nSexo: Feminino");
+          }
+          printf("\nValor da compra: %.2f", valorCompras[i]);
+        }
+      }
+      if (igual == 0) {
+        printf("Cadastro não encontrado");
+      }
+
+      voltarMenuPrincipal(menu);
+      break;
+
+    case 2:
+      clear();
+      printf("\nDigite um valor: ");
+      scanf("%f", &valorVerificar);
+
+      // QNTD DE N MENOR
+      for (int i = 0; i < cadastros; i++) {
+        if (valorVerificar > valorCompras[i]) {
+          qntdMenor++;
+        }
+      }
+      printf("\n-----------------------------------------------");
+      printf("\nQuantidade de compras menores que %.2f: %d ", valorVerificar,
+             qntdMenor);
+      //---------------------------------
+
+      // CLIENTE E MENOR VALOR
+      for (int i = 0; i < cadastros; i++) {
+        if (valorVerificar > valorCompras[i]) {
+          printf("\nCliente %s: %.2f", nomes[i], valorCompras[i]);
+        }
+      }
+      printf("\n-----------------------------------------------");
+      //---------------------------------
+
+      // QNTD DE N MAIOR
+      for (int i = 0; i < cadastros; i++) {
+        if (valorVerificar < valorCompras[i]) {
+          qntdMaior++;
+        }
+      }
+      printf("\nQuantidade de compras acima de %.2f: %d", valorVerificar,
+             qntdMaior);
+      //---------------------------------
+
+      // CLIENTE E VALOR DO CLIENTE
+      for (int i = 0; i < cadastros; i++) {
+        if (valorVerificar < valorCompras[i]) {
+          printf("\nCliente %s: %.2f", nomes[i], valorCompras[i]);
+        }
+      }
+      printf("\n-----------------------------------------------");
+      //---------------------------------
+
+      // QNTD DE MULHERES
+      printf("\nQuantidade de compradoras mulheres: %d", contadorF);
+      printf("\n-----------------------------------------------");
+      //---------------------------------
+
+      // TOTAL DE COMPRAS FEITAS POR HOMENS
+      totalM = 0;
+      for (int i = 0; i < cadastros; i++) {
+        if (sexos[i] == 'm') {
+          totalM = totalM + valorCompras[i];
+        }
+      }
+      printf("\nQuantidade total de compras feitas por homens. %.2f", totalM);
+      printf("\n-----------------------------------------------");
+
+      // TOTAL DE COMRPAS
+      total = 0;
+      for (int i = 0; i < cadastros; i++) {
+        total = total + valorCompras[i];
+      }
+      media = total / cadastros;
+
+      printf("\nTotal de compras: %.2f", total);
+      printf("\nMédia de compras: %.2f", media);
+      printf("\n-----------------------------------------------");
+
+      // MENOR VALOR
+      for (int i = 0; i < cadastros; i++) {
+        if (menorValor == 0 && valorCompras[i] != 0) {
+          menorValor = valorCompras[i];
+        } else if (valorCompras[i] < menorValor) {
+          menorValor = valorCompras[i];
+        }
+      }
+      printf("\nA menor compra foi de: %.2f\n", menorValor);
+
+      voltarMenuPrincipal(menu);
+
+      break;
+
+    case 3:
+      clear();
+      printf("Encerrando o programa, Volte sempre!\n");
+      break;
+
+    default:
+      printf("Opção invalida!");
+    }
+  }
+}
